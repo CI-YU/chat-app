@@ -65,7 +65,7 @@ socket.on('roomData', ({ room, users }) => {
     room,
     users,
   });
-  document.querySelector('#sidebar').insertAdjacentHTML('beforeend', html);
+  document.querySelector('#sidebar').innerHTML = html;
   autoscroll();
 });
 
