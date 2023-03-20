@@ -181,3 +181,25 @@ button:disabled {
     font-weight: 300;
     padding: 12px 24px 0 24px;
 }
+
+.gpt-button-bar {
+    display: flex;
+    padding: 1rem;
+    color: white;
+    background: #333744;
+}
+
+.gpt-button-bar .gpt-button {
+    border: 1px solid white;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.gpt-button-bar .gpt-button.active {
+    color: #F0EB8D;
+    border: 1px solid #F0EB8D;
+}
+
+.gpt-button-bar .gpt-button + .gpt-button {
+    margin-left: 1rem;
+}

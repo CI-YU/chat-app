@@ -6,6 +6,7 @@ const $messageFormInput = $messageForm.querySelector('input');
 const $messageFormButton = $messageForm.querySelector('button');
 const $sendLocationButton = document.getElementById('send-location');
 const $messages = document.querySelector('#message');
+const $gptButtons = document.querySelectorAll('.gpt-button-bar .gpt-button')
 
 //templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
@@ -75,7 +76,8 @@ $messageForm.addEventListener('submit', (e) => {
   $messageFormButton.setAttribute('disabled', 'disabled');
 
   const inputValue = e.target.elements.message.value;
-  socket.emit('sendMessage', inputValue, (error) => {
+  const callType = document.querySelector('.gpt-button-bar .gpt-button.active')?.dataset.type || null
+  socket.emit('sendMessage', { inputValue, callType }, (error) => {
     $messageFormButton.removeAttribute('disabled');
     $messageFormInput.value = '';
     $messageFormInput.focus();
@@ -112,3 +114,18 @@ socket.emit('join', { username, room }, (error) => {
     location.href = '/';
   }
 });
+
+$gptButtons.forEach((el) => {
+  el.addEventListener('click', selectGptType)
+})
+
+function selectGptType(e) {
+  if (e.target.classList.contains('active')) {
+    e.target.classList.remove('active')
+  } else {
+    $gptButtons.forEach((el) => {
+      el.classList.remove('active')
+    })
+    e.target.classList.add('active')
+  }
+}
