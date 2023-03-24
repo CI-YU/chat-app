@@ -7,6 +7,7 @@ const $messageFormButton = $messageForm.querySelector('button');
 const $sendLocationButton = document.getElementById('send-location');
 const $messages = document.querySelector('#message');
 const $gptButtons = document.querySelectorAll('.gpt-button-bar .gpt-button')
+const $gptSettingForm = document.querySelector('#gpt-setting-form');
 
 //templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
@@ -50,6 +51,12 @@ socket.on('message', (message) => {
   $messages.insertAdjacentHTML('beforeend', html);
   autoscroll();
 });
+socket.on('reply', ({ user, msg, messages }) => {
+  if (user === username) {
+    messages.push({ "role": "assistant", "content": msg })
+    sessionStorage.setItem(user, JSON.stringify(messages))
+  }
+});
 socket.on('locationMessage', (message) => {
   const html = Mustache.render(locationTemplate, {
     username: message.username,
@@ -69,6 +76,29 @@ socket.on('roomData', ({ room, users }) => {
   document.querySelector('#sidebar').innerHTML = html;
   autoscroll();
 });
+$gptSettingForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const roleValue = e.target.role.value
+  const replyType = e.target.replyType.value
+  let replyTypeString = ``
+  if (replyType === "1") {
+    replyTypeString = `英文，並透過對話`
+  } else {
+    replyTypeString = `英文，並使用書信體`
+  }
+
+  const msg = `你是${roleValue}，接下來請用${replyTypeString}的模式來回答，please use english`
+  const historyMsgArr = JSON.parse(sessionStorage.getItem(username)) || []
+  const messages = [...historyMsgArr]
+  if (messages.length !== 0) {
+    messages.shift()
+    messages.unshift({ "role": "system", "content": msg })
+  } else {
+    messages.push({ "role": "system", "content": msg })
+  }
+  sessionStorage.setItem(username, JSON.stringify(messages))
+  alert('基礎設定完成')
+})
 
 $messageForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -77,15 +107,36 @@ $messageForm.addEventListener('submit', (e) => {
 
   const inputValue = e.target.elements.message.value;
   const callType = document.querySelector('.gpt-button-bar .gpt-button.active')?.dataset.type || null
-  socket.emit('sendMessage', { inputValue, callType }, (error) => {
-    $messageFormButton.removeAttribute('disabled');
-    $messageFormInput.value = '';
-    $messageFormInput.focus();
-    if (error) {
-      return console.log(error);
+
+  if (inputValue.startsWith('$ai ')) {
+    const historyMsgArr = JSON.parse(sessionStorage.getItem(username)) || []
+    const messages = [...historyMsgArr]
+    messages.push({ "role": "user", "content": inputValue.slice(3) })
+    if (messages.length > 20) {
+      messages.shift()
     }
-    console.log('The message was delivered');
-  });
+
+    socket.emit('sendAiMessage', { inputValue, messages }, (error) => {
+      $messageFormButton.removeAttribute('disabled');
+      $messageFormInput.value = '';
+      $messageFormInput.focus();
+      if (error) {
+        return console.log(error);
+      }
+      console.log('The AI message was delivered');
+    });
+  } else {
+    socket.emit('sendMessage', { inputValue, callType }, (error) => {
+      $messageFormButton.removeAttribute('disabled');
+      $messageFormInput.value = '';
+      $messageFormInput.focus();
+      if (error) {
+        return console.log(error);
+      }
+      console.log('The message was delivered');
+    });
+  }
+
 });
 
 document.querySelector('#send-location').addEventListener('click', () => {
