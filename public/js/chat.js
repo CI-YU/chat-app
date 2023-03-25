@@ -43,20 +43,47 @@ const autoscroll = () => {
 };
 
 socket.on('message', (message) => {
-  const html = Mustache.render(messageTemplate, {
-    username: message.username,
-    message: message.text,
-    createAt: moment(message.createAt).format('h:mm a'),
-  });
-  $messages.insertAdjacentHTML('beforeend', html);
+  console.log(message.type)
+  if (message.type === "AI") {
+    const html = Mustache.render(messageTemplate, {
+      username: message.username,
+      message: '',
+      createAt: moment(message.createAt).format('h:mm a'),
+    });
+    $messages.insertAdjacentHTML('beforeend', html);
+    const length = document.querySelectorAll('#message .message').length
+    const target = document.querySelectorAll('#message .message')[length - 1].querySelector('.content')
+    const data = message.text.split('')
+    let index = 0
+    let result = ``
+    function typeWord() {
+      if (index < data.length) {
+        result += data[index]
+        target.innerText = result
+        setTimeout(typeWord.bind(this), 20, index++)
+      }
+    }
+    // target.innerText = message.text
+    typeWord()
+  } else {
+    const html = Mustache.render(messageTemplate, {
+      username: message.username,
+      message: message.text,
+      createAt: moment(message.createAt).format('h:mm a'),
+    });
+    $messages.insertAdjacentHTML('beforeend', html);
+  }
+
   autoscroll();
 });
+
 socket.on('reply', ({ user, msg, messages }) => {
   if (user === username) {
     messages.push({ "role": "assistant", "content": msg })
     sessionStorage.setItem(user, JSON.stringify(messages))
   }
 });
+
 socket.on('locationMessage', (message) => {
   const html = Mustache.render(locationTemplate, {
     username: message.username,
@@ -76,6 +103,7 @@ socket.on('roomData', ({ room, users }) => {
   document.querySelector('#sidebar').innerHTML = html;
   autoscroll();
 });
+
 $gptSettingForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const roleValue = e.target.role.value

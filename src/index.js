@@ -94,7 +94,7 @@ io.on('connection', (socket) => {
         });
 
         console.log(completion.data.choices[0].message);
-        io.to(user.room).emit('message', generateMessage('Admin', completion.data.choices[0].message.content));
+        io.to(user.room).emit('message', generateMessage('Admin', completion.data.choices[0].message.content, 'AI'));
 
       } catch (error) {
         if (error.response) {
@@ -132,7 +132,7 @@ io.on('connection', (socket) => {
       });
 
       console.log(completion.data.choices[0].message);
-      io.to(user.room).emit('message', generateMessage('Admin', `${completion.data.choices[0].message.content}`));
+      io.to(user.room).emit('message', generateMessage('Admin', `${completion.data.choices[0].message.content}`, 'AI'));
       io.to(user.room).emit('reply', { user: user.username, msg: completion.data.choices[0].message.content, messages: messages })
     } catch (error) {
       if (error.response) {
