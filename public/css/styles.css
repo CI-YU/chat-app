@@ -181,15 +181,23 @@ button:disabled {
     font-weight: 300;
     padding: 12px 24px 0 24px;
 }
-
-.gpt-button-bar {
+#topbar {
     display: flex;
     padding: 1rem;
     color: white;
     background: #333744;
 }
 
+.gpt-button-bar {
+    display: flex;
+    color: white;
+    background: #333744;
+}
+
 .gpt-button-bar .gpt-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid white;
     padding: 0.25rem 0.5rem;
     cursor: pointer;
@@ -202,4 +210,12 @@ button:disabled {
 
 .gpt-button-bar .gpt-button + .gpt-button {
     margin-left: 1rem;
+}
+
+#gpt-setting-form {
+    margin-left: 1rem;
+}
+
+#gpt-setting-form select {
+    height: 100%;
 }

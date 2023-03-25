@@ -6,17 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat App</title>
     <link rel="icon" href="./img/favicon.png" />
-    <link rel="stylesheet" href="./css//styles.min.css" />
+    <link rel="stylesheet" href="./css//styles.css" />
+    <!-- <link rel="stylesheet" href="./css//styles.min.css" /> -->
   </head>
   <body>
     <div class="chat">
       <div id="sidebar" class="chat__sidebar"></div>
       <div class="chat__main">
-        <div class="gpt-button-bar">
-          <div class="gpt-button" data-type="1" >文法檢查</div>
-          <div class="gpt-button" data-type="2">文法分析</div>
-          <div class="gpt-button" data-type="3">中翻英</div>
-          <div class="gpt-button" data-type="4">英翻中</div>
+        <div id="topbar">
+          <div class="gpt-button-bar">
+            <div class="gpt-button" data-type="1" >文法檢查</div>
+            <div class="gpt-button" data-type="2">文法分析</div>
+            <div class="gpt-button" data-type="3">中翻英</div>
+            <div class="gpt-button" data-type="4">英翻中</div>
+          </div>
+          <form id="gpt-setting-form">
+            <input
+            name="role"
+            placeholder="AI 角色設定 ex: 咖啡廳店員"
+            required
+            autocomplete="off"
+            />
+            <select name="replyType" id="replyType" required>
+              <option value="1">英文會話</option>
+              <option value="2">英文書信</option>
+            </select>
+            <button>sumit</button>
+          </form>
         </div>
         <div id="message" class="chat__messages"></div>
         <div class="compose">
@@ -40,7 +56,7 @@
           <span class="message__name">{{username}}</span>
           <span class="message__meta">{{createAt}}</span>
         </p>
-        <p>{{message}}</p>
+        <p class="content">{{message}}</p>
       </div>
     </script>
 
